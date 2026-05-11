@@ -97,6 +97,38 @@ public class ProductService {
 
     }
 
+
+    @Transactional
+    public ProductDTO updateProductDetails(ProductDTO newProductDetails) {
+
+        Product currProduct = productRepoImpl.findById(newProductDetails.getProductId()).orElse(null);
+
+        if(currProduct == null) {
+            return new ProductDTO("Product does not exists");
+        }
+
+        currProduct.setName(newProductDetails.getName());
+        currProduct.setProductImage(newProductDetails.getImageUrl());
+        currProduct.setProductDescription(newProductDetails.getProductDesc());
+        currProduct.setCategory(newProductDetails.getCategory());
+        currProduct.setPrice(newProductDetails.getPrice());
+
+        productRepoImpl.save(currProduct);
+
+        return new ProductDTO(
+                "product updated successfully",
+                currProduct.getId(),
+                currProduct.getName(),
+                currProduct.getPrice(),
+                currProduct.getProductDescription(),
+                currProduct.getCategory(),
+                currProduct.getProductImage(),
+                currProduct.getStock()
+        );
+
+    }
+
+
     @Transactional
     public ProductDTO addProductToCollection(String name, float price, String productDescription, int stock, String category, String productImage) {
         Product savedProduct = productRepoImpl.save (new Product (name, price, productDescription, stock, category, productImage));

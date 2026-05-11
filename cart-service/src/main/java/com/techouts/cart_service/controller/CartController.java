@@ -38,7 +38,7 @@ public class CartController {
 
     }
 
-    @PostMapping("add")
+    @PostMapping
     public ResponseEntity<Map<String, String>> addProductToCart(@RequestBody AddToCartRequest request,
                                                                 @RequestHeader("X-User-Id") Integer userId) {
 

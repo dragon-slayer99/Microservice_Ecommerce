@@ -3,6 +3,7 @@ package com.techouts.product_service.controller;
 
 import com.techouts.product_service.dto.ProductDTO;
 import com.techouts.product_service.service.ProductService;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -51,11 +52,30 @@ public class ProductController {
 
     }
 
-    @PostMapping("update")
-    public ProductDTO updateProductStock(@RequestParam(name = "productId") int productId, @RequestParam(name = "newStock") int newStock) {
+    @PatchMapping("{id}/stock")
+    public ProductDTO updateProductStock(@PathVariable(name = "id") int productId, @RequestParam(name = "newStock") int newStock) {
 
         return productService.updateProductStock (productId, newStock);
 
+    }
+
+    @PatchMapping("{id}/update")
+    public ProductDTO updateProductDetails(@Valid @ModelAttribute ProductDTO newProductDetails) {
+
+        return productService.updateProductDetails(newProductDetails);
+
+    }
+
+    @PostMapping("add")
+    public ProductDTO addNewProductToCollection(@Valid @ModelAttribute ProductDTO newProduct) {
+        return productService.addProductToCollection(
+                newProduct.getName(),
+                newProduct.getPrice(),
+                newProduct.getProductDesc(),
+                newProduct.getStock(),
+                newProduct.getCategory(),
+                newProduct.getImageUrl()
+        );
     }
 
 

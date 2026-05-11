@@ -1,4 +1,4 @@
-package com.techouts.order_service.config;
+package com.techouts.cart_service.config;
 
 import feign.RequestInterceptor;
 import jakarta.servlet.http.HttpServletRequest;
@@ -22,7 +22,7 @@ public class FeignConfig {
                 HttpServletRequest request = requestAttributes.getRequest();
 
                 String userId = request.getHeader("X-User-Id");
-                String userRole = request.getHeader("X-User-Role");
+                String userRole = request.getHeader("x-User-Role");
 
                 if (userId != null) {
                     requestTemplate.header("X-User-Id", userId);
@@ -35,7 +35,6 @@ public class FeignConfig {
             }
 
         };
-
     }
 
 }

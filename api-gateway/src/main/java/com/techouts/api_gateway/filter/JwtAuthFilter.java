@@ -36,32 +36,35 @@ public class JwtAuthFilter implements GlobalFilter, Ordered {
         System.out.println("API GATEWAY IS WORKING!!!!!!!!");
 
         String path = exchange.getRequest().getURI().getPath();
+        String method = exchange.getRequest().getMethod().name();
 
         // public endpoints don't need user login
         List<String> excludedURIs = List.of(
-                "/api/products",
-                "/api/user/login",
-                "/api/user/register"
+                "/api/users/login",
+                "/api/users/register"
         );
 
+        List<String> adminURIs = List.of(
+                "/api/admin"
+        );
+
+
         // skip the check for public endpoints
-        if (excludedURIs.stream().anyMatch(path::startsWith)) {
+        if (excludedURIs.stream().anyMatch(path::startsWith) || (path.startsWith("/api/products") && "GET".equals(method))) {
             return chain.filter(exchange);
         }
 
-        String authHeader = exchange.getRequest().getHeaders().getFirst(HttpHeaders.AUTHORIZATION);
+        String authHeader = exchange.getRequest().getHeaders().getFirst(HttpHeaders.AUTHORIZATION); // extract the authorization header
 
-        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) { // check for bearer token in the auth header
             return sendError(exchange, "Missing or invalid Authorization header");
         }
 
-        System.out.println("AUTH HEADER: " + authHeader);
-
-        String JWTtoken = authHeader.substring(7);
+        String JWTtoken = authHeader.substring(7); // Extract the actual JWT token
 
         System.out.println(JWTtoken);
 
-        try {
+        try { // validate JWT token
             if (!jwtUtil.validateToken(JWTtoken)) {
                 return sendError(exchange, "Invalid Authorization header");
             }
@@ -70,17 +73,35 @@ public class JwtAuthFilter implements GlobalFilter, Ordered {
         } catch (JwtException e) {
             return sendError(exchange, "Invalid token");
         } catch (Exception e) {
-            return sendError(exchange, "");
+            return sendError(exchange, "Unknown error");
         }
 
         Integer extractedUserId = jwtUtil.extractUserId(JWTtoken);
+        String roleFromJWT = jwtUtil.extractUserRole(JWTtoken);
+
+        if(adminURIs.stream().anyMatch(path::startsWith)) { // restrict customer from accessing admin endpoints
+
+            if(!"ROLE_ADMIN".equals(roleFromJWT)) {
+                return sendError(exchange, "Access Denied");
+            }
+
+        }
+
+        if(path.startsWith("/api/products") && !"GET".equals(method)) { // Limit normal customer from accessing product endpoints that manipulate product data
+
+            if(!"ROLE_ADMIN".equals(roleFromJWT)) {
+                return sendError(exchange, "Access Denied");
+            }
+
+        }
 
         ServerHttpRequest modifiedRequest = exchange.getRequest()
                 .mutate()
                 .header("X-User-Id", String.valueOf(extractedUserId))
+                .header("X-User-Role", String.valueOf(roleFromJWT))
                 .build();
 
-        return chain.filter(exchange.mutate().request(modifiedRequest).build());
+        return chain.filter(exchange.mutate().request(modifiedRequest).build()); // modify the incoming request to include the userID so the services can access the userID
 
     }
 

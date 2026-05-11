@@ -21,7 +21,7 @@ public class JwtUtil {
         return Jwts.builder ()
                 .setSubject (Integer.toString (user.getId ()))
                 .claim ("X-User-ID", user.getId ())
-                .claim ("X-Username", user.getName ())
+                .claim("X-User-Role", user.getRole())
                 .setIssuedAt (new Date ())
                 .setExpiration (new Date (System.currentTimeMillis () + 1000 * 60 * 60)) // 60 min expiration time
                 .signWith (key, SignatureAlgorithm.HS256)

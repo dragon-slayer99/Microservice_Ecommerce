@@ -23,12 +23,17 @@ public class JwtUtil {
 
     public Integer extractUserId(String JWTtoken) {
 
-        Integer userId = getClaimsFromToken (JWTtoken).get ("X-User-ID", Integer.class);
+        return getClaimsFromToken (JWTtoken).get ("X-User-ID", Integer.class);
 
-        return userId;
     }
 
-    private Claims getClaimsFromToken(String JWTtoken) {
+    public String extractUserRole(String JWTtoken) {
+
+        return getClaimsFromToken(JWTtoken).get("X-User-Role", String.class);
+
+    }
+
+    public Claims getClaimsFromToken(String JWTtoken) {
 
         return Jwts.parserBuilder ()
                 .setSigningKey (key)
