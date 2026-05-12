@@ -11,22 +11,22 @@
   </component>
   <component name="DBNavigator.Project.DatabaseAssistantManager">
     <assistants>
-      <assistant-state connection-id="627680b9-55d0-4a8e-83b7-68967bbedc7c" assistant-type="SELECT_AI" default-profile-name="" selected-chat-id="" availability="UNAVAILABLE" acknowledgement="NONE">
-        <tools />
-      </assistant-state>
       <assistant-state connection-id="627680b9-55d0-4a8e-83b7-68967bbedc7c" assistant-type="PUBLIC" default-profile-name="" selected-chat-id="" availability="AVAILABLE" acknowledgement="NONE" selected="true">
         <tools />
       </assistant-state>
-      <assistant-state connection-id="7ae26952-7753-4aca-8068-6f5065faa52b" assistant-type="SELECT_AI" default-profile-name="" selected-chat-id="" availability="UNAVAILABLE" acknowledgement="NONE">
+      <assistant-state connection-id="627680b9-55d0-4a8e-83b7-68967bbedc7c" assistant-type="SELECT_AI" default-profile-name="" selected-chat-id="" availability="UNAVAILABLE" acknowledgement="NONE">
         <tools />
       </assistant-state>
       <assistant-state connection-id="7ae26952-7753-4aca-8068-6f5065faa52b" assistant-type="PUBLIC" default-profile-name="" selected-chat-id="" availability="AVAILABLE" acknowledgement="NONE" selected="true">
         <tools />
       </assistant-state>
-      <assistant-state connection-id="7254ee23-7113-44fe-bb23-350a24ccca3d" assistant-type="SELECT_AI" default-profile-name="" selected-chat-id="" availability="UNAVAILABLE" acknowledgement="NONE">
+      <assistant-state connection-id="7ae26952-7753-4aca-8068-6f5065faa52b" assistant-type="SELECT_AI" default-profile-name="" selected-chat-id="" availability="UNAVAILABLE" acknowledgement="NONE">
         <tools />
       </assistant-state>
       <assistant-state connection-id="7254ee23-7113-44fe-bb23-350a24ccca3d" assistant-type="PUBLIC" default-profile-name="" selected-chat-id="" availability="AVAILABLE" acknowledgement="NONE" selected="true">
+        <tools />
+      </assistant-state>
+      <assistant-state connection-id="7254ee23-7113-44fe-bb23-350a24ccca3d" assistant-type="SELECT_AI" default-profile-name="" selected-chat-id="" availability="UNAVAILABLE" acknowledgement="NONE">
         <tools />
       </assistant-state>
     </assistants>
@@ -42,35 +42,35 @@
   </component>
   <component name="DBNavigator.Project.DatabaseConsoleManager">
     <connection id="7ae26952-7753-4aca-8068-6f5065faa52b">
-      <console name="Connection" type="STANDARD" schema="public" session="Main"><![CDATA[select
-    p."category",
-    p."id",
-    p."name",
-    p."price",
-    p."product_description",
-    p."product_image",
-    p."stock"
+      <console name="Connection" type="STANDARD" schema="public" session="Main">select
+    p.&quot;category&quot;,
+    p.&quot;id&quot;,
+    p.&quot;name&quot;,
+    p.&quot;price&quot;,
+    p.&quot;product_description&quot;,
+    p.&quot;product_image&quot;,
+    p.&quot;stock&quot;
 from
-    "products" p;]]></console>
-      <console name="productDB" type="STANDARD" schema="productdb" session="Main"><![CDATA[select * from productdb;]]></console>
+    &quot;products&quot; p;</console>
+      <console name="productDB" type="STANDARD" schema="productdb" session="Main">select * from productdb;</console>
     </connection>
     <connection id="7254ee23-7113-44fe-bb23-350a24ccca3d">
-      <console name="userDB" type="STANDARD" schema="public" session="Main"><![CDATA[select
-    u."email",
-    u."id",
-    u."joined_date",
-    u."name",
-    u."password",
-    u."role"
+      <console name="userDB" type="STANDARD" schema="public" session="Main">select
+    u.&quot;email&quot;,
+    u.&quot;id&quot;,
+    u.&quot;joined_date&quot;,
+    u.&quot;name&quot;,
+    u.&quot;password&quot;,
+    u.&quot;role&quot;
 from
-    "users" u;]]></console>
+    &quot;users&quot; u;</console>
     </connection>
     <connection id="627680b9-55d0-4a8e-83b7-68967bbedc7c">
-      <console name="cartDB" type="STANDARD" schema="public" session="Main"><![CDATA[select
-    c."id",
-    c."user_id"
+      <console name="cartDB" type="STANDARD" schema="public" session="Main">select
+    c.&quot;id&quot;,
+    c.&quot;user_id&quot;
 from
-    "carts" c;]]></console>
+    &quot;carts&quot; c;</console>
     </connection>
   </component>
   <component name="DBNavigator.Project.DatabaseEditorStateManager">
@@ -609,10 +609,12 @@ from
           <content-type name="DTD" enabled="true" />
           <content-type name="HTML" enabled="true" />
           <content-type name="XHTML" enabled="true" />
+          <content-type name="CSS" enabled="true" />
           <content-type name="Java" enabled="true" />
           <content-type name="SQL" enabled="true" />
           <content-type name="PL/SQL" enabled="true" />
           <content-type name="JPA QL" enabled="true" />
+          <content-type name="JavaScript" enabled="true" />
           <content-type name="JSON" enabled="true" />
           <content-type name="JSON5" enabled="true" />
           <content-type name="Groovy" enabled="true" />

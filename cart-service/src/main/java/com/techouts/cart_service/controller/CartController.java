@@ -6,6 +6,11 @@ import com.techouts.cart_service.dto.CartItemDTO;
 import com.techouts.cart_service.dto.CartResponseDTO;
 import com.techouts.cart_service.dto.UpdateCartRequest;
 import com.techouts.cart_service.service.CartService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,6 +21,10 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/cart/items")
+@Tag(
+        name = "Cart Service",
+        description = "APIs for managing user shopping cart operations"
+)
 public class CartController {
 
     private final CartService cartService;
@@ -24,8 +33,28 @@ public class CartController {
         this.cartService = cartService;
     }
 
+    @Operation(
+            summary = "Get cart items",
+            description = "Retrieves all items in authenticated user cart."
+    )
+    @ApiResponses({
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Cart items retrieved successfully"
+            ),
+            @ApiResponse(
+                    responseCode = "401",
+                    description = "Missing or invalid authentication"
+            ),
+            @ApiResponse(
+                    responseCode = "500",
+                    description = "Unexpected server error"
+            )
+    })
     @GetMapping
-    public ResponseEntity<CartResponseDTO> serveCartItems(@RequestHeader("X-User-Id") Integer userId) {
+    public ResponseEntity<CartResponseDTO> serveCartItems(
+            @Parameter(description = "Authenticated user identifier")
+            @RequestHeader("X-User-Id") Integer userId) {
 
         List<CartItemDTO> userCartItems = cartService.getCartItemsByUser(userId);
 
@@ -38,6 +67,24 @@ public class CartController {
 
     }
 
+    @Operation(
+            summary = "Add product to cart",
+            description = "Adds a product into the authenticated user's shopping cart with the specified quantity."
+    )
+    @ApiResponses({
+            @ApiResponse(
+                    responseCode = "201",
+                    description = "Product added to cart successfully"
+            ),
+            @ApiResponse(
+                    responseCode = "400",
+                    description = "Invalid request payload"
+            ),
+            @ApiResponse(
+                    responseCode = "500",
+                    description = "Unexpected server error"
+            )
+    })
     @PostMapping
     public ResponseEntity<Map<String, String>> addProductToCart(@RequestBody AddToCartRequest request,
                                                                 @RequestHeader("X-User-Id") Integer userId) {
@@ -58,12 +105,30 @@ public class CartController {
 
         response.put("message", "Successfully added the product to cart");
 
-        return ResponseEntity.ok(response);
+        return ResponseEntity.status(201).body(response);
 
     }
 
+    @Operation(
+            summary = "Remove cart item",
+            description = "Removes a specific item from cart."
+    )
+    @ApiResponses({
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Cart item removed successfully"
+            ),
+            @ApiResponse(
+                    responseCode = "401",
+                    description = "Unauthorized access"
+            ),
+            @ApiResponse(
+                    responseCode = "500",
+                    description = "Unexpected server error"
+            )
+    })
     @DeleteMapping("/{cartItemId}")
-    public ResponseEntity<Map<String, String>> removeProductFromCart(@PathVariable int cartItemId,
+    public ResponseEntity<Map<String, String>> removeProductFromCart(@Parameter(description = "Unique identifier of cart item") @PathVariable int cartItemId,
                                                                      @RequestHeader("X-User-Id") Integer userId) {
 
         String removalStatus = cartService.removeCartItemFromCart(cartItemId, userId);
@@ -81,6 +146,24 @@ public class CartController {
 
     }
 
+    @Operation(
+            summary = "Empty cart",
+            description = "Removes every item from the authenticated user's cart."
+    )
+    @ApiResponses({
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Cart cleared successfully"
+            ),
+            @ApiResponse(
+                    responseCode = "401",
+                    description = "Unauthorized access"
+            ),
+            @ApiResponse(
+                    responseCode = "500",
+                    description = "Internal server error"
+            )
+    })
     @DeleteMapping
     public ResponseEntity<CartResponseDTO> emptyUserCart(@RequestHeader("X-User-Id") Integer userId) {
 
@@ -90,6 +173,28 @@ public class CartController {
 
     }
 
+    @Operation(
+            summary = "Update cart item quantity",
+            description = "Updates quantity of a cart item."
+    )
+    @ApiResponses({
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Cart item updated successfully"
+            ),
+            @ApiResponse(
+                    responseCode = "400",
+                    description = "Invalid quantity supplied"
+            ),
+            @ApiResponse(
+                    responseCode = "401",
+                    description = "Unauthorized access"
+            ),
+            @ApiResponse(
+                    responseCode = "500",
+                    description = "Internal server error"
+            )
+    })
     @PutMapping("/{cartItemId}")
     public ResponseEntity<Map<String, Object>> updateCartItem(@PathVariable int cartItemId,
                                                               @RequestBody UpdateCartRequest request,

@@ -10,6 +10,7 @@ import java.util.List;
 public class CartResponseDTO {
 
     private String message;
+
     private List<CartItemDTO> items;
 
     public CartResponseDTO(List<CartItemDTO> items) {
