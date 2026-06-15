@@ -20,7 +20,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/orders")
-@CrossOrigin(origins = "http://localhost:8080")
+@CrossOrigin(origins = "http://localhost:5173")
 @Tag(
         name = "Order Service",
         description = "APIs for managing user order operations"
@@ -52,15 +52,14 @@ public class OrderController {
             )
     })
     @GetMapping
-    public ResponseEntity<Object> getOrders(
+    public ResponseEntity<List<OrderDTO>> getOrders(
             @Parameter(description = "Authenticated user ID") @RequestHeader("X-User-Id") Integer userId) {
 
         List<OrderDTO> userOrders = orderService.getOrderByUser(userId);
 
         if(userOrders == null || userOrders.isEmpty ()) {
-            Map<String, String> response = new HashMap<>();
-            response.put("message", "User does not have any orders yet");
-            return ResponseEntity.ok(response);
+            userOrders.add(new OrderDTO("User does not have any orders yet"));
+            ResponseEntity.ok(userOrders);
         }
 
         return ResponseEntity.ok(userOrders);

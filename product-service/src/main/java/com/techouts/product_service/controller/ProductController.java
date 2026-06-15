@@ -1,14 +1,18 @@
 package com.techouts.product_service.controller;
 
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+import com.techouts.product_service.model.Product;
 import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.annotation.PostConstruct;
 import org.springframework.web.bind.annotation.*;
 
 import com.techouts.product_service.dto.ProductDTO;
@@ -18,7 +22,7 @@ import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/products")
-@CrossOrigin(origins = "http://localhost:8080")
+@CrossOrigin(origins = "http://localhost:5173")
 @Tag(
         name = "Product Controller",
         description = "APIs for managing product catalog operations including product retrieval, creation, updation, and deletion."
@@ -71,18 +75,18 @@ public class ProductController {
     @GetMapping
     public Map<String, Object> getProducts(@RequestParam(name = "page", required = false) Integer pageNo, @RequestParam(required = false) String category) {
 
-        Map<String, Object> response = new HashMap<> ();
+        Map<String, Object> response = new HashMap<>();
 
-        if(pageNo == null) {
+        if (pageNo == null) {
 
-            response.put ("products", productService.getProducts (category));
+            response.put("products", productService.getProducts(category));
             return response;
         }
 
 
         int totalProductsCnt = productService.getProducts(category).size();
 
-        int pageIdx = Math.max (0, pageNo);
+        int pageIdx = Math.max(0, pageNo);
 
         response.put("products", productService.getProducts(pageIdx, category));
         response.put("totalPages", (int) Math.ceil((double) totalProductsCnt / 12));
@@ -96,7 +100,7 @@ public class ProductController {
     @PatchMapping("{id}/stock")
     public ProductDTO updateProductStock(@PathVariable(name = "id") int productId, @RequestParam(name = "newStock") int newStock) {
 
-        return productService.updateProductStock (productId, newStock);
+        return productService.updateProductStock(productId, newStock);
 
     }
 
@@ -108,7 +112,7 @@ public class ProductController {
 
     }
 
-    @Hidden
+//    @Hidden
     @PostMapping("add")
     public ProductDTO addNewProductToCollection(@Valid @ModelAttribute ProductDTO newProduct) {
         return productService.addProductToCollection(
@@ -120,7 +124,5 @@ public class ProductController {
                 newProduct.getImageUrl()
         );
     }
-
-
 }
 
