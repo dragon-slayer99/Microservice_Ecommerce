@@ -1,8 +1,10 @@
 package com.techouts.user_service.controller;
 
 import com.techouts.user_service.dto.LoginRequest;
+import com.techouts.user_service.dto.RefreshRequest;
 import com.techouts.user_service.dto.RegisterRequest;
 import com.techouts.user_service.dto.UserDTO;
+import com.techouts.user_service.model.RefreshToken;
 import com.techouts.user_service.model.User;
 import com.techouts.user_service.service.UserService;
 import com.techouts.user_service.utils.JwtUtil;
@@ -11,11 +13,14 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -160,10 +165,36 @@ public class UserController {
 
         User user = userService.getUser (email);
 
-        String JWTtoken = jwtUtil.generateToken (user);
+        String accessToken = jwtUtil.generateAccessToken(user);
+        response.put("accessToken", accessToken);
+        String refreshToken = userService.createRefreshToken(user).getToken();
+        ResponseCookie responseCookie = ResponseCookie.from("refreshToken", refreshToken)
+                .httpOnly(true)
+                .secure(true)
+                .path("/")
+                .maxAge(Duration.ofDays(7))
+                .sameSite("Strict")
+                .build();
 
-        return ResponseEntity.ok (Map.of ("token", JWTtoken));
+        return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, refreshToken.toString()).body(response);
 
     }
+
+
+    @PostMapping("refresh-token")
+    public ResponseEntity<Map<String, Object>> newJwtToken(@CookieValue(value = "refreshToken") String refreshToken) {
+
+        RefreshToken currRefreshToken = userService.validateRefreshToken(refreshToken);
+
+        if(currRefreshToken == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "Provided refresh token is expired"));
+        }
+
+        String accessToken = jwtUtil.generateAccessToken(currRefreshToken.getUser());
+
+        return ResponseEntity.ok(Map.of("accessToken", accessToken));
+
+    }
+
 
 }

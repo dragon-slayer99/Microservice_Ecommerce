@@ -2,24 +2,30 @@ package com.techouts.user_service.service;
 
 
 import com.techouts.user_service.dto.UserDTO;
+import com.techouts.user_service.model.RefreshToken;
 import com.techouts.user_service.model.User;
+import com.techouts.user_service.repository.RefreshTokenRepo;
 import com.techouts.user_service.repository.UserRepo;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class UserService {
 
     UserRepo userRepoImpl;
     PasswordEncoder encoder;
+    RefreshTokenRepo refreshTokenRepo;
 
-    UserService(UserRepo userRepoImpl, PasswordEncoder encoder) {
+    UserService(UserRepo userRepoImpl, PasswordEncoder encoder, RefreshTokenRepo refreshTokenRepo) {
         this.userRepoImpl = userRepoImpl;
         this.encoder = encoder;
+        this.refreshTokenRepo = refreshTokenRepo;
     }
 
     @Transactional(readOnly = true)
@@ -58,6 +64,7 @@ public class UserService {
 
     }
 
+    @Transactional(readOnly = true)
     public UserDTO getUserById(int userId) {
 
         User user = userRepoImpl.findById (userId).orElse (null);
@@ -105,5 +112,34 @@ public class UserService {
         return userRepoImpl.findAll();
 
     }
+
+    public RefreshToken createRefreshToken(User user) {
+
+        RefreshToken currRefreshToken = refreshTokenRepo.findByUser(user).orElse(null);
+
+        if(currRefreshToken != null) {
+            return currRefreshToken;
+        }
+
+        RefreshToken refreshToken = new RefreshToken();
+
+        refreshToken.setUser(user);
+        refreshToken.setExpiryDate(LocalDate.now().plus(7, ChronoUnit.DAYS));
+        refreshToken.setToken(UUID.randomUUID().toString());
+
+        return refreshTokenRepo.save(refreshToken);
+    }
+
+    public RefreshToken validateRefreshToken(String refreshToken) {
+        RefreshToken currRefreshToken = refreshTokenRepo.findByToken(refreshToken).orElse(null);
+
+        if(currRefreshToken == null || currRefreshToken.getExpiryDate().isBefore(LocalDate.now())) {
+            return null;
+        }
+
+        return currRefreshToken;
+
+    }
+
 }
 

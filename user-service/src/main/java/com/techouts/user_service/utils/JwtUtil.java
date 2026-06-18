@@ -1,5 +1,6 @@
 package com.techouts.user_service.utils;
 
+import com.techouts.user_service.model.RefreshToken;
 import com.techouts.user_service.model.User;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -17,7 +18,7 @@ public class JwtUtil {
 
     SecretKey key = Keys.hmacShaKeyFor (Decoders.BASE64.decode (SECRET));
 
-    public String generateToken(User user) {
+    public String generateAccessToken(User user) {
         return Jwts.builder ()
                 .setSubject (Integer.toString (user.getId ()))
                 .claim ("X-User-ID", user.getId ())
